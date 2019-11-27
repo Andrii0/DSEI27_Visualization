@@ -42,7 +42,7 @@ app.layout = html.Div([
                         'layout': {
                             'title': 'Inspection Grade by Borough',
                             'xaxis' : dict(
-                                title='Borough',
+                                title='Grade',
                                 titlefont=dict(
                                 family='Courier New, monospace',
                                 size=20,
