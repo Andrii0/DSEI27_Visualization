@@ -8,6 +8,8 @@ from toolz import compose, pluck, groupby, valmap, first, unique, get, countby
 import datetime as dt
 import os
 
+import pandas as pd
+
 
 ################################################################################
 # HELPERS
@@ -18,15 +20,39 @@ listmap = compose(list, map)
 listunique = compose(list, unique)
 
 TIMESTAMP_FORMAT = "%m/%d/%Y"
-
+'''
 # Datetime helpers.
 def sighting_year(sighting):
     return dt.datetime.strptime(sighting['INSPECTION DATE'], TIMESTAMP_FORMAT).year
-'''
+
 def sighting_dow(sighting):
     return dt.datetime.strptime(sighting['timestamp'], TIMESTAMP_FORMAT)\
                       .strftime("%a")
 '''
+
+
+################################################################################
+# DATA
+################################################################################
+# Read the data.
+'''
+fin = open('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', 'r', encoding = 'UTF8')
+reader = DictReader(fin)
+RESTAURANT_DATA = [
+                    line for line in reader 
+                    if (sighting_year(line) <= 2019) and (sighting_year(line) >= 2019)
+                  ]
+fin.close()
+'''
+
+data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv')
+data['INSPECTION DATE'] = pd.to_datetime(data['INSPECTION DATE'])
+temp = data.groupby('DBA').apply(lambda x: x.sort_values(['INSPECTION DATE'],ascending=False).head(1))
+RESTAURANT_DATA = temp.T.to_dict().values()
+
+
+
+
 ################################################################################
 # PLOTS
 ################################################################################
@@ -42,7 +68,7 @@ def bigfoot_map(sightings):
                     "mode": "markers",
                     "name": classification,
                     "marker": {
-                        "size": 3,
+                        "size": 5,
                         "opacity": 1.0
                     }
                 }
@@ -148,15 +174,7 @@ def bigfoot_class(sightings):
 ################################################################################
 # APP INITIALIZATION
 ################################################################################
-# Read the data.
-fin = open('DOHMH_New_York_City_Restaurant_Inspection_Results.csv', 'r', encoding = 'UTF8')
-reader = DictReader(fin)
-RESTAURANT_DATA = \
-[
-    line for line in reader 
-    if (sighting_year(line) <= 2019) and (sighting_year(line) >= 2019)
-]
-fin.close()
+
 
 app = dash.Dash()
 # For Heroku deployment.
