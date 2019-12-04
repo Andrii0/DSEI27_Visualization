@@ -30,7 +30,6 @@ def sighting_dow(sighting):
                       .strftime("%a")
 '''
 
-
 ################################################################################
 # DATA
 ################################################################################
@@ -49,8 +48,6 @@ data = pd.read_csv('DOHMH_New_York_City_Restaurant_Inspection_Results.csv')
 data['INSPECTION DATE'] = pd.to_datetime(data['INSPECTION DATE'])
 temp = data.groupby('DBA').apply(lambda x: x.sort_values(['INSPECTION DATE'],ascending=False).head(1))
 RESTAURANT_DATA = temp.T.to_dict().values()
-
-
 
 
 ################################################################################
